@@ -6,9 +6,6 @@ export class WebViewProvider implements vscode.WebviewViewProvider {
 	) { }
 
     resolveWebviewView(webviewView: vscode.WebviewView, context: vscode.WebviewViewResolveContext<unknown>, token: vscode.CancellationToken): void | Thenable<void> {
-        // Get the local path to main script run in the webview, then convert it to a uri we can use in the webview.
-		const scriptUri = webviewView.webview.asWebviewUri(vscode.Uri.joinPath(this._extensionContext.extensionUri, 'src/resources', 'main.js'));
-
         // Use a nonce to only allow a specific script to be run.
 		const nonce = getNonce();
 
@@ -24,11 +21,15 @@ export class WebViewProvider implements vscode.WebviewViewProvider {
             <title>Cat Colors</title>
         </head>
         <body>
-            <input/>
+            <input id="input"/>
             <button id="enter">enter</button>
             <script>
                 const vscode = acquireVsCodeApi();
+                const input = document.getElementById('input);
                 document.getElementById('enter').addEventListener('click', (e) => {
+                    console.log("value: " + input.value);
+                    console.log("event: ", e);
+
                     vscode.setState({ text: "asd" });
                     vscode.postMessage({ type: 'newTextEntered', value: "asd" }, '*');
                 });
@@ -37,15 +38,13 @@ export class WebViewProvider implements vscode.WebviewViewProvider {
         </html>
         `;
 
-        webviewView.webview.options={enableScripts:true}
+        webviewView.webview.options = {enableScripts:true};
 
-        console.log('Script URI: ' + scriptUri);
         webviewView.webview.onDidReceiveMessage(data => {
-            console.log('Received message!!!', data);
 			switch (data.type) {
 				case 'newTextEntered':
 					{
-                        vscode.window.showInformationMessage(`You entered: ${data.text}`);
+                        vscode.window.showInformationMessage(`You entered: ${data.value}`);
 						break;
 					}
 			}
