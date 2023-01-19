@@ -25,7 +25,7 @@ export class WebViewProvider implements vscode.WebviewViewProvider {
             <button id="enter">enter</button>
             <script>
                 const vscode = acquireVsCodeApi();
-                const input = document.getElementById('input);
+                const input = document.getElementById('input');
                 document.getElementById('enter').addEventListener('click', (e) => {
                     console.log("value: " + input.value);
                     console.log("event: ", e);
