@@ -18,20 +18,16 @@ export class WebViewProvider implements vscode.WebviewViewProvider {
                 and only allow scripts that have a specific nonce.
                 (See the 'webview-sample' extension sample for img-src content security policy examples)
             -->
-            <title>Cat Colors</title>
         </head>
         <body>
             <input id="input"/>
             <button id="enter">enter</button>
-            <script>
+            <script nonce=${nonce}>
                 const vscode = acquireVsCodeApi();
                 const input = document.getElementById('input');
                 document.getElementById('enter').addEventListener('click', (e) => {
-                    console.log("value: " + input.value);
-                    console.log("event: ", e);
-
-                    vscode.setState({ text: "asd" });
-                    vscode.postMessage({ type: 'newTextEntered', value: "asd" }, '*');
+                    vscode.setState({ text: input.value });
+                    vscode.postMessage({ type: 'newTextEntered', value: input.value }, '*');
                 });
             </script>
         </body>
