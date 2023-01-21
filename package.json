@@ -19,7 +19,25 @@
         "command": "vsc-gpt.helloWorld",
         "title": "Hello World"
       }
-    ]
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "gpt",
+          "title": "GPT",
+          "icon": "src/resources/testtube.svg"
+        }
+      ]
+    },
+    "views": {
+      "gpt": [
+        {
+          "type": "webview",
+          "id": "gptWebView",
+          "name": "GPT WebView"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "yarn run package",
