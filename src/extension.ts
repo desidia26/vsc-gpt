@@ -1,7 +1,6 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { TreeViewProvider } from './providers/treeViewProvider';
 import { WebViewProvider } from './providers/webViewProvider';
 
 // This method is called when your extension is activated
@@ -22,17 +21,7 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.window.showInformationMessage('Hello World from vsc-gpt!');
 	});
 
-	//Register Tree View
-	const rootPath = vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0
-		? vscode.workspace.workspaceFolders[0].uri.fsPath
-		: undefined;
-	if (rootPath) {
-		vscode.window.registerTreeDataProvider(
-			'nodeDependencies',
-			new TreeViewProvider(rootPath)
-		);
-	}
-
+	// Register Webview Provider
 	vscode.window.registerWebviewViewProvider('gptWebView', new WebViewProvider(context));
 
 	context.subscriptions.push(disposable);
