@@ -29,6 +29,24 @@
           "description": "Key to use gpt3 with."
         }
       }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "gpt",
+          "title": "GPT",
+          "icon": "src/resources/testtube.svg"
+        }
+      ]
+    },
+    "views": {
+      "gpt": [
+        {
+          "type": "webview",
+          "id": "gptWebView",
+          "name": "GPT WebView"
+        }
+      ]
     }
   },
   "scripts": {

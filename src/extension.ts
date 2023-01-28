@@ -2,6 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { getAnswer } from './api/gpt/gptRequests';
+import { WebViewProvider } from './providers/webViewProvider';
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -25,6 +26,7 @@ export function activate(context: vscode.ExtensionContext) {
 			vscode.window.showInformationMessage(answer);
 		});
 	});
+	vscode.window.registerWebviewViewProvider('gptWebView', new WebViewProvider(context));
 
 	context.subscriptions.push(disposable);
 }
