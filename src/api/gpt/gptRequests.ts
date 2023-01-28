@@ -30,7 +30,3 @@ export async function getAnswer(prompt: string, temperature: number, max_tokens:
     return "error!";
   }
 }
-
-// getAnswer("who is lao tzu", 1, 1000).then(ans => {
-//   console.log(ans);
-// });

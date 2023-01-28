@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { getAnswer } from '../api/gpt/gptRequests';
 
 export class WebViewProvider implements vscode.WebviewViewProvider {
     constructor(
@@ -22,12 +23,15 @@ export class WebViewProvider implements vscode.WebviewViewProvider {
         <body>
             <input id="input"/>
             <button id="enter">enter</button>
+            <p id="answer"></p>
             <script nonce=${nonce}>
                 const vscode = acquireVsCodeApi();
                 const input = document.getElementById('input');
                 document.getElementById('enter').addEventListener('click', (e) => {
-                    vscode.setState({ text: input.value });
                     vscode.postMessage({ type: 'newTextEntered', value: input.value }, '*');
+                });
+                window.addEventListener('message', event => {
+                    document.getElementById('answer').innerHTML = event.data.answer;
                 });
             </script>
         </body>
@@ -40,7 +44,9 @@ export class WebViewProvider implements vscode.WebviewViewProvider {
 			switch (data.type) {
 				case 'newTextEntered':
 					{
-                        vscode.window.showInformationMessage(`You entered: ${data.value}`);
+                        getAnswer(data.value, 0, 4000).then(answer => {
+                            webviewView.webview.postMessage({ answer });
+                        });
 						break;
 					}
 			}

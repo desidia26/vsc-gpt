@@ -14,12 +14,6 @@
   ],
   "main": "./dist/extension.js",
   "contributes": {
-    "commands": [
-      {
-        "command": "vsc-gpt.askTheThing",
-        "title": "Ask the thing"
-      }
-    ],
     "configuration": {
       "title": "gpt",
       "properties": {
