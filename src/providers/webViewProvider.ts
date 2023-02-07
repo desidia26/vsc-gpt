@@ -59,6 +59,12 @@ export class WebViewProvider implements vscode.WebviewViewProvider {
                     document.getElementById('answer').innerHTML = "";
                     document.getElementById('input').value = "";
                 });
+                document.getElementById('input').addEventListener('keydown', (e) => {
+                    if (e.keyCode === 13 ) {
+                        e.preventDefault();
+                        vscode.postMessage({ type: 'newTextEntered', value: input.value }, '*');
+                    }
+                })
                 window.addEventListener('message', event => {
                     switch(event.data.type) {
                         case 'message':
