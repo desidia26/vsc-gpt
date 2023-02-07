@@ -10,10 +10,15 @@
     "Other"
   ],
   "activationEvents": [
-    "onStartupFinished"
+    "onStartupFinished",
+    "onCommand:vsc-gpt.explain"
   ],
   "main": "./dist/extension.js",
   "contributes": {
+    "commands": {
+      "command": "vsc-gpt.explain",
+      "title": "VSC-GPT: Explain"
+    },
     "configuration": {
       "title": "gpt",
       "properties": {
@@ -23,6 +28,21 @@
           "description": "Key to use gpt3 with."
         }
       }
+    },
+    "menus": {
+      "editor/context": [
+        {
+          "command": "vsc-gpt.explain",
+          "when": "editorHasSelection",
+          "group": "vsc-gpt-menu-group@1"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "vsc-gpt.explain",
+          "when": "editorHasSelection"
+        }
+      ]
     },
     "viewsContainers": {
       "activitybar": [
@@ -38,7 +58,7 @@
         {
           "type": "webview",
           "id": "gptWebView",
-          "name": "GPT WebView"
+          "name": "VSC GPT WebView"
         }
       ]
     }

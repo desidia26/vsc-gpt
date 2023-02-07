@@ -19,17 +19,30 @@ export function activate(context: vscode.ExtensionContext) {
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('vsc-gpt.askTheThing', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		getAnswer("What is love?", 1, 1000).then(answer => {
-			vscode.window.showInformationMessage(answer);
-		});
-	});
-	vscode.window.registerWebviewViewProvider('gptWebView', new WebViewProvider(context));
+	const provider = new WebViewProvider(context);
+	vscode.window.registerWebviewViewProvider('gptWebView', provider, { webviewOptions: {retainContextWhenHidden: true}});
 
-	context.subscriptions.push(disposable);
+	context.subscriptions.push(registerExplain(context, provider));
 }
 
 // This method is called when your extension is deactivated
 export function deactivate() {}
+
+function registerExplain(context: vscode.ExtensionContext, provider: WebViewProvider) {
+	return vscode.commands.registerCommand('vsc-gpt.explain', () => {
+		vscode.commands.executeCommand("gptWebView.focus").then(() => {
+			const editor = vscode.window.activeTextEditor;
+	
+			if (!editor) {
+				return;
+			} 
+	
+			const selection = editor.document.getText(editor.selection);
+	
+			const prompt = `Explain "${selection}"`;
+	
+			provider.newInput(prompt);
+			provider.handleGetAnswer(prompt);
+		})
+	})
+}

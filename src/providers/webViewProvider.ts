@@ -3,10 +3,13 @@ import { getAnswer } from '../api/gpt/gptRequests';
 
 export class WebViewProvider implements vscode.WebviewViewProvider {
     constructor(
-        private readonly _extensionContext: vscode.ExtensionContext
+        private readonly _extensionContext: vscode.ExtensionContext,
+        private _view?: vscode.WebviewView
 	) { }
 
     resolveWebviewView(webviewView: vscode.WebviewView, context: vscode.WebviewViewResolveContext<unknown>, token: vscode.CancellationToken): void | Thenable<void> {
+        console.log("RESOLVING WEBVIEW");
+        this._view = webviewView;
         // Use a nonce to only allow a specific script to be run.
 		const nonce = getNonce();
 
@@ -30,6 +33,10 @@ export class WebViewProvider implements vscode.WebviewViewProvider {
             }
             .button {
                 border-color: var(--vscode-editor-foreground);
+                cursor: pointer;
+            }
+            .button:disabled {
+                cursor: default;
             }
             .textarea {
                 border-color: var(--vscode-editor-foreground);
@@ -61,6 +68,9 @@ export class WebViewProvider implements vscode.WebviewViewProvider {
                 });
                 window.addEventListener('message', event => {
                     switch(event.data.type) {
+                        case 'new-input':
+                            document.getElementById('input').innerHTML = event.data.value;
+                            break;
                         case 'message':
                             document.getElementById('answer').innerHTML = event.data.value;
                             break;
@@ -87,24 +97,32 @@ export class WebViewProvider implements vscode.WebviewViewProvider {
 			switch (data.type) {
 				case 'newTextEntered':
 					{
-                        if(!data.value) {
-                            webviewView.webview.postMessage({type: 'message', value: 'Please enter some text'});
-                            return;
-                        }
-                        webviewView.webview.postMessage({type: 'action', value: 'disable-button'});
-                        webviewView.webview.postMessage({type: 'message', value: 'Thinking...'});
-                        getAnswer(data.value, 0, 4000).then(answer => {
-                        webviewView.webview.postMessage({type: 'message', value: 'Thinking...'});
-                            webviewView.webview.postMessage({type: 'message', value: answer});
-                            webviewView.webview.postMessage({type: 'action', value: 'enable-button'});
-                        });
+                        this.handleGetAnswer(data.value);
 						break;
 					}
 			}
 		}, undefined, this._extensionContext.subscriptions);
     }
 
+    handleGetAnswer(prompt: string) {
+        if(!prompt) {
+            this._view!.webview.postMessage({type: 'message', value: 'Please enter some text'});
+            return;
+        }
+        this._view!.webview.postMessage({type: 'action', value: 'disable-button'});
+        this._view!.webview.postMessage({type: 'message', value: 'Thinking...'});
+        getAnswer(prompt, 0, 4000).then(answer => {
+            this._view!.webview.postMessage({type: 'message', value: 'Thinking...'});
+            this._view!.webview.postMessage({type: 'message', value: answer});
+            this._view!.webview.postMessage({type: 'action', value: 'enable-button'});
+        });
+    }
+
+    newInput(prompt: string) {
+        this._view!.webview.postMessage({type: 'new-input', value: prompt})
+    }
 }
+
 
 function getNonce() {
 	let text = '';
